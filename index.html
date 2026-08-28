@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pages-lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img, picture, video, canvas, svg { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3 { overflow-wrap: break-word; }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #555555;
+    --border: #dddddd;
+    --accent: #0a58ca;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa4af;
+      --border: #30363d;
+      --accent: #6ea8fe;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1.5rem;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+  .tagline { color: var(--muted); margin-bottom: 2rem; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+  th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+  th { color: var(--muted); font-weight: 600; }
+  .status-not-started { color: var(--muted); }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 3rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+  <h1>pages-lab</h1>
+  <p class="tagline">Testing what GitHub Pages can actually do, and where it stops — live, not in prose.</p>
+
+  <table>
+    <thead>
+      <tr><th>Test</th><th>Status</th><th>Result</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Pyodide numeric ceiling</td><td class="status-not-started">not started</td><td>—</td></tr>
+      <tr><td>Actions-triggered update latency</td><td class="status-not-started">not started</td><td>—</td></tr>
+      <tr><td>Service-worker offline caching</td><td class="status-not-started">not started</td><td>—</td></tr>
+      <tr><td>Client-side routing, no server rewrites</td><td class="status-not-started">not started</td><td>—</td></tr>
+      <tr><td>Max practical repo/site size</td><td class="status-not-started">not started</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <footer>
+    <a href="https://github.com/nlade-core/pages-lab">source</a> ·
+    next up: Cloudflare Pages, same tests
+  </footer>
+</body>
+</html>
