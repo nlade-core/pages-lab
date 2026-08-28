@@ -122,6 +122,18 @@
   .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
   .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
   .writeup p { margin-bottom: 0.75rem; }
+
+  nav.pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  nav.pager a { color: var(--accent); text-decoration: none; }
+  nav.pager a:hover { text-decoration: underline; }
+  nav.pager .disabled { color: var(--muted); }
 </style>
 </head>
 <body>
@@ -174,8 +186,13 @@
     <div class="writeup">
       <h2>Write-up</h2>
       <p>The fix works, but it's not free: watch the address bar on a fresh deep-link load and you'll see it change twice — once as the browser lands on the 404 and gets bounced to the experiment's base URL, then again as the script restores the real intended path. That flicker is the honest cost of not having a real server. It also depends on JavaScript and sessionStorage being available; with JS disabled, a deep link just shows GitHub's default 404, full stop.</p>
-      <p>Status: done. Next: service-worker offline caching.</p>
+      <p>Status: done.</p>
     </div>
+
+    <nav class="pager">
+      <a href="../01-hello-world/">← 01 hello world</a>
+      <span class="disabled">next: not built yet</span>
+    </nav>
   </div>
 
   <script>

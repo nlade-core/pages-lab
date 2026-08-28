@@ -102,6 +102,18 @@
   .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
   .writeup p { margin-bottom: 0.75rem; }
 
+  nav.pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  nav.pager a { color: var(--accent); text-decoration: none; }
+  nav.pager a:hover { text-decoration: underline; }
+  nav.pager .disabled { color: var(--muted); }
+
   details.lang-toggle { margin-bottom: 1.5rem; }
   details.lang-toggle summary {
     cursor: pointer;
@@ -162,8 +174,13 @@
       <h2>Write-up</h2>
       <p>All three of these run entirely in the browser — no server, no build step, no API call. That's the baseline every later experiment here builds on: if plain JS/DOM/Canvas works, the interesting question for each next test is what stops working (or gets expensive) as the demo gets heavier — Pyodide's numeric ceiling, Actions round-trip latency, offline caching, and so on.</p>
       <p>The canvas demo was originally a passive auto-animating dot. It technically worked (verified by reading the drawn pixel data directly), but a small shape drifting slowly across an empty box turned out to be easy to mistake for broken — twice. Replaced with click/drag drawing instead: tying the effect directly to visitor input removes the ambiguity, and it's arguably a more honest test of "does canvas work" than a loop nobody's watching.</p>
-      <p>Status: done. Next: Pyodide numeric ceiling.</p>
+      <p>Status: done.</p>
     </div>
+
+    <nav class="pager">
+      <span class="disabled">← previous</span>
+      <a href="../02-routing/">02 routing →</a>
+    </nav>
   </div>
 
   <script>
