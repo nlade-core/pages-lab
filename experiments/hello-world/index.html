@@ -36,8 +36,20 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     line-height: 1.5;
     padding: 3rem 1.5rem;
+  }
+
+  .layout {
     max-width: 640px;
     margin: 0 auto;
+  }
+  @media (min-width: 1000px) {
+    .layout {
+      max-width: 1040px;
+      display: grid;
+      grid-template-columns: 640px 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
   }
   a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
   a.back:hover { text-decoration: underline; }
@@ -68,36 +80,76 @@
 
   canvas { border-radius: 6px; background: var(--bg); }
 
+  .source-panel {
+    margin-bottom: 1.25rem;
+  }
+  @media (min-width: 1000px) {
+    .source-panel { position: sticky; top: 2rem; }
+  }
+  details.source {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+  }
+  details.source summary {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  details.source pre {
+    margin-top: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  details.source code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    white-space: pre;
+  }
+
   .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 2.5rem; }
   .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
   .writeup p { margin-bottom: 0.75rem; }
 </style>
 </head>
 <body>
-  <a class="back" href="../../">← pages-lab</a>
-  <h1>hello world</h1>
-  <p class="tagline">Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend?</p>
+  <div class="layout">
+    <div class="main">
+      <a class="back" href="../../">← pages-lab</a>
+      <h1>hello world</h1>
+      <p class="tagline">Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend?</p>
 
-  <div class="demo-block">
-    <h2>Click counter</h2>
-    <button id="counter-btn">Click me</button>
-    <span id="count">0</span>
-  </div>
+      <div class="demo-block">
+        <h2>Click counter</h2>
+        <button id="counter-btn">Click me</button>
+        <span id="count">0</span>
+      </div>
 
-  <div class="demo-block">
-    <h2>Live clock</h2>
-    <div id="clock">--:--:--</div>
-  </div>
+      <div class="demo-block">
+        <h2>Live clock</h2>
+        <div id="clock">--:--:--</div>
+      </div>
 
-  <div class="demo-block">
-    <h2>Canvas draw</h2>
-    <canvas id="canvas" width="300" height="120"></canvas>
-  </div>
+      <div class="demo-block">
+        <h2>Canvas draw</h2>
+        <canvas id="canvas" width="300" height="120"></canvas>
+      </div>
 
-  <div class="writeup">
-    <h2>Write-up</h2>
-    <p>All three of these run entirely in the browser — no server, no build step, no API call. That's the baseline every later experiment here builds on: if plain JS/DOM/Canvas works, the interesting question for each next test is what stops working (or gets expensive) as the demo gets heavier — Pyodide's numeric ceiling, Actions round-trip latency, offline caching, and so on.</p>
-    <p>Status: done. Next: Pyodide numeric ceiling.</p>
+      <div class="writeup">
+        <h2>Write-up</h2>
+        <p>All three of these run entirely in the browser — no server, no build step, no API call. That's the baseline every later experiment here builds on: if plain JS/DOM/Canvas works, the interesting question for each next test is what stops working (or gets expensive) as the demo gets heavier — Pyodide's numeric ceiling, Actions round-trip latency, offline caching, and so on.</p>
+        <p>Status: done. Next: Pyodide numeric ceiling.</p>
+      </div>
+    </div>
+
+    <aside class="source-panel">
+      <details class="source">
+        <summary>View source</summary>
+        <pre><code id="source-code"></code></pre>
+      </details>
+    </aside>
   </div>
 
   <script>
@@ -129,6 +181,8 @@
       requestAnimationFrame(draw);
     }
     draw();
+
+    document.getElementById('source-code').textContent = document.currentScript.textContent;
   </script>
 </body>
 </html>
