@@ -43,6 +43,8 @@
   th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
   th { color: var(--muted); font-weight: 600; }
   .status-not-started { color: var(--muted); }
+  .status-done { color: var(--accent); font-weight: 600; }
+  td a { color: var(--accent); }
   footer { color: var(--muted); font-size: 0.85rem; margin-top: 3rem; }
   a { color: var(--accent); }
 </style>
@@ -53,20 +55,20 @@
 
   <table>
     <thead>
-      <tr><th>Test</th><th>Status</th><th>Result</th></tr>
+      <tr><th>Experiment</th><th>Status</th></tr>
     </thead>
     <tbody>
-      <tr><td>Pyodide numeric ceiling</td><td class="status-not-started">not started</td><td>—</td></tr>
-      <tr><td>Actions-triggered update latency</td><td class="status-not-started">not started</td><td>—</td></tr>
-      <tr><td>Service-worker offline caching</td><td class="status-not-started">not started</td><td>—</td></tr>
-      <tr><td>Client-side routing, no server rewrites</td><td class="status-not-started">not started</td><td>—</td></tr>
-      <tr><td>Max practical repo/site size</td><td class="status-not-started">not started</td><td>—</td></tr>
+      <tr><td><a href="experiments/hello-world/">Hello world</a></td><td class="status-done">done</td></tr>
+      <tr><td>Pyodide numeric ceiling</td><td class="status-not-started">not started</td></tr>
+      <tr><td>Actions-triggered update latency</td><td class="status-not-started">not started</td></tr>
+      <tr><td>Service-worker offline caching</td><td class="status-not-started">not started</td></tr>
+      <tr><td>Client-side routing, no server rewrites</td><td class="status-not-started">not started</td></tr>
+      <tr><td>Max practical repo/site size</td><td class="status-not-started">not started</td></tr>
     </tbody>
   </table>
 
   <footer>
-    <a href="https://github.com/nlade-core/pages-lab">source</a> ·
-    next up: another host, same tests
+    <a href="https://github.com/nlade-core/pages-lab">source</a>
   </footer>
 </body>
 </html>

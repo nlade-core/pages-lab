@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hello world — pages-lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img, picture, video, canvas, svg { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3 { overflow-wrap: break-word; }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #555555;
+    --border: #dddddd;
+    --accent: #0a58ca;
+    --accent-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa4af;
+      --border: #30363d;
+      --accent: #6ea8fe;
+      --accent-fg: #0d1117;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1.5rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+  h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
+  .tagline { color: var(--muted); margin-bottom: 2rem; }
+
+  .demo-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+
+  button {
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  button:hover { opacity: 0.9; }
+  #count { font-variant-numeric: tabular-nums; margin-left: 0.75rem; }
+
+  #clock { font-variant-numeric: tabular-nums; font-size: 1.1rem; }
+
+  canvas { border-radius: 6px; background: var(--bg); }
+
+  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 2.5rem; }
+  .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .writeup p { margin-bottom: 0.75rem; }
+</style>
+</head>
+<body>
+  <a class="back" href="../../">← pages-lab</a>
+  <h1>hello world</h1>
+  <p class="tagline">Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend?</p>
+
+  <div class="demo-block">
+    <h2>Click counter</h2>
+    <button id="counter-btn">Click me</button>
+    <span id="count">0</span>
+  </div>
+
+  <div class="demo-block">
+    <h2>Live clock</h2>
+    <div id="clock">--:--:--</div>
+  </div>
+
+  <div class="demo-block">
+    <h2>Canvas draw</h2>
+    <canvas id="canvas" width="300" height="120"></canvas>
+  </div>
+
+  <div class="writeup">
+    <h2>Write-up</h2>
+    <p>All three of these run entirely in the browser — no server, no build step, no API call. That's the baseline every later experiment here builds on: if plain JS/DOM/Canvas works, the interesting question for each next test is what stops working (or gets expensive) as the demo gets heavier — Pyodide's numeric ceiling, Actions round-trip latency, offline caching, and so on.</p>
+    <p>Status: done. Next: Pyodide numeric ceiling.</p>
+  </div>
+
+  <script>
+    let count = 0;
+    const countEl = document.getElementById('count');
+    document.getElementById('counter-btn').addEventListener('click', () => {
+      count += 1;
+      countEl.textContent = count;
+    });
+
+    const clockEl = document.getElementById('clock');
+    function tick() {
+      clockEl.textContent = new Date().toLocaleTimeString();
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const cssAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+    let x = 0;
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = cssAccent;
+      ctx.beginPath();
+      ctx.arc(x, canvas.height / 2, 12, 0, Math.PI * 2);
+      ctx.fill();
+      x = (x + 2) % (canvas.width + 24) - 12;
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
