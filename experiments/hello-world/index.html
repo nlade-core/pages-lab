@@ -121,10 +121,10 @@
     <div class="header">
       <a class="back" href="../../">← pages-lab</a>
       <h1>hello world</h1>
-      <p class="tagline">Just proving the basics work: buttons, a clock, drawing on the page — no server involved at all.</p>
+      <p class="tagline">Just proving the basics work: buttons, a clock, drawing on the page — no server involved at all. Why bother: it's the floor everything else here stands on — no point testing heavier stuff if this didn't work.</p>
       <details class="lang-toggle">
         <summary>Technical version</summary>
-        <p>Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend? Each demo's own code sits next to it — click "View source" to compare.</p>
+        <p>Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend? Each demo's own code sits next to it — click "View source" to compare. Matters because every later experiment assumes these primitives (DOM events, timers, canvas) are reliable; if they weren't, testing Pyodide or service workers on top of them would be pointless.</p>
       </details>
     </div>
 

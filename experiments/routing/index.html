@@ -129,10 +129,10 @@
     <div class="header">
       <a class="back" href="../../">← pages-lab</a>
       <h1>routing</h1>
-      <p class="tagline">Can links to "sub-pages" that don't really exist as files still work, even though GitHub Pages can't fake them on the server side?</p>
+      <p class="tagline">Can links to "sub-pages" that don't really exist as files still work, even though GitHub Pages can't fake them on the server side? Why bother: this is the difference between a shared link landing on the right page or on a broken one.</p>
       <details class="lang-toggle">
         <summary>Technical version</summary>
-        <p>GitHub Pages serves files only, no server-side rewrites. Client-side routing (History API push/replaceState) works fine for in-page navigation, but a fresh load or refresh on a fake sub-path 404s because no matching file exists. This tests the standard workaround: a custom 404.html that redirects back with the intended path in sessionStorage.</p>
+        <p>GitHub Pages serves files only, no server-side rewrites. Client-side routing (History API push/replaceState) works fine for in-page navigation, but a fresh load or refresh on a fake sub-path 404s because no matching file exists. This tests the standard workaround: a custom 404.html that redirects back with the intended path in sessionStorage. Matters beyond this lab: any React Router / Vue Router / client-routed app deployed to GitHub Pages hits this exact failure mode on deep links — this is the standard fix for it, not a lab-only trick.</p>
       </details>
     </div>
 
