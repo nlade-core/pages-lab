@@ -70,15 +70,21 @@
   .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
   .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
 
+  .steps { margin: 0 0 0.75rem 1.25rem; font-size: 0.95rem; }
+  .steps li { margin-bottom: 0.5rem; }
+  .steps strong { color: var(--fg); }
+
   .status-row {
     display: flex;
     justify-content: space-between;
+    gap: 1rem;
     font-size: 0.95rem;
     padding: 0.4rem 0;
     border-bottom: 1px solid var(--border);
   }
   .status-row:last-of-type { border-bottom: none; }
-  .status-row .value { font-weight: 600; }
+  .status-row span:first-child { flex-shrink: 0; }
+  .status-row .value { font-weight: 600; text-align: right; }
 
   .cached-list {
     margin-top: 0.75rem;
@@ -174,7 +180,14 @@
 
     <div class="demo-block">
       <h2>Test it for real</h2>
-      <p class="hint">Turn on airplane mode (or disconnect your network entirely), then reload this page. If it still loads, the service worker served it from cache — not simulated, your actual connection.</p>
+      <p class="hint">First, check the box above: "service worker" should say <strong>active</strong> and the cache list shouldn't be empty. That's this visit having actually cached the page — nothing below proves anything until that's true.</p>
+      <ol class="steps">
+        <li>Open your browser's DevTools (Cmd+Option+I on Mac, Ctrl+Shift+I on Windows/Linux) and go to the <strong>Network</strong> tab.</li>
+        <li>Check the <strong>Offline</strong> box. This cuts network access for this tab only — no need to touch your actual wifi.</li>
+        <li>Make sure <strong>"Disable cache"</strong>, usually right next to it, is <em>unchecked</em>. That one specifically defeats what's being tested here — a common false negative.</li>
+        <li>Reload normally (Cmd+R / Ctrl+R). Not a hard refresh (Cmd+Shift+R) — browsers deliberately let a hard refresh skip the service worker, so that would make a working cache look broken.</li>
+      </ol>
+      <p class="hint">If the page still loads with Offline checked, that's the real mechanism working: GitHub Pages never saw this request, your browser served it from what it saved on an earlier visit. Uncheck Offline afterward to go back to normal. No DevTools handy? Airplane mode plus a normal reload proves the same thing, it just cuts your whole connection instead of one tab's.</p>
       <button class="reload-btn" id="reload-btn">Reload this page</button>
     </div>
     <details class="source">
