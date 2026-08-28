@@ -34,6 +34,8 @@
   a { color: var(--accent); }
   p { color: var(--muted); margin-top: 0.5rem; }
   .title { font-size: 1.25rem; font-weight: 600; color: var(--fg); }
+  ul { list-style: none; margin-top: 0.75rem; }
+  li { margin-top: 0.4rem; }
 </style>
 </head>
 <body>
@@ -57,7 +59,12 @@
     } else {
       document.getElementById('fallback').innerHTML =
         '<p class="title">Page not found</p>' +
-        '<p><a href="/pages-lab/">&larr; pages-lab</a></p>';
+        '<p>Try one of these instead:</p>' +
+        '<ul>' +
+        '<li><a href="/pages-lab/">&larr; pages-lab</a></li>' +
+        '<li><a href="/pages-lab/01-hello-world/">01 hello world</a></li>' +
+        '<li><a href="/pages-lab/02-routing/">02 routing</a></li>' +
+        '</ul>';
     }
   </script>
 </body>
