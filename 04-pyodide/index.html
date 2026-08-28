@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pyodide — pages-lab</title>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.28.0/full/pyodide.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img, picture, video, canvas, svg { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3 { overflow-wrap: break-word; }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #555555;
+    --border: #dddddd;
+    --accent: #0a58ca;
+    --accent-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa4af;
+      --border: #30363d;
+      --accent: #6ea8fe;
+      --accent-fg: #0d1117;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1.5rem;
+  }
+
+  .layout {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+  h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
+  .tagline { color: var(--muted); margin-bottom: 1rem; }
+
+  details.lang-toggle { margin-bottom: 1.5rem; }
+  details.lang-toggle summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  details.lang-toggle summary:hover { color: var(--fg); }
+  details.lang-toggle p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .demo-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.95rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .status-row:last-of-type { border-bottom: none; }
+  .status-row span:first-child { flex-shrink: 0; }
+  .status-row .value { font-weight: 600; text-align: right; }
+
+  button {
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    margin-top: 0.75rem;
+  }
+  button:hover { opacity: 0.9; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  table.bench-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+  }
+  table.bench-table th, table.bench-table td {
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  table.bench-table th { color: var(--muted); font-weight: 600; }
+  table.bench-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  #bench-summary { margin-top: 0.75rem; }
+
+  details.source {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  details.source summary {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  details.source pre {
+    margin-top: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  details.source code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    white-space: pre;
+  }
+
+  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
+  .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .writeup p { margin-bottom: 0.75rem; }
+
+  nav.pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  nav.pager a { color: var(--accent); text-decoration: none; }
+  nav.pager a:hover { text-decoration: underline; }
+  nav.pager .disabled { color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="layout">
+    <div class="header">
+      <a class="back" href="../">← pages-lab</a>
+      <h1>pyodide</h1>
+      <p class="tagline">Can a browser tab run the same number-crunching tools you'd normally need a Python server for — and how much can it actually chew through before it's too slow to bother? Why bother: it's the difference between needing a backend for anything data-heavy, or not.</p>
+      <details class="lang-toggle">
+        <summary>Technical version</summary>
+        <p>Loads Pyodide (CPython + numpy compiled to WebAssembly) directly in-browser, no server involved. Times the real boot cost (runtime + numpy fetch and init), then runs an escalating numpy matrix-multiply benchmark against a plain-JS equivalent, stopping once a round crosses a slowness threshold. Matters beyond this lab: this is the same mechanism behind in-browser data-science tools like JupyterLite — the tradeoff is always this one, real download weight and WASM overhead versus not needing a backend at all.</p>
+      </details>
+    </div>
+
+    <div class="demo-block">
+      <h2>Boot cost</h2>
+      <p class="hint">Real download, timed live — nothing here is precomputed. Roughly 11.5MB for the core runtime, another 2.9MB for numpy, measured directly from the CDN.</p>
+      <div class="status-row"><span>Core runtime</span><span class="value" id="boot-core">not loaded</span></div>
+      <div class="status-row"><span>numpy</span><span class="value" id="boot-numpy">not loaded</span></div>
+      <button id="load-btn">Load Pyodide</button>
+    </div>
+    <details class="source">
+      <summary>View source (boot)</summary>
+      <pre><code id="source-boot"></code></pre>
+    </details>
+
+    <div class="demo-block">
+      <h2>Finding the ceiling</h2>
+      <p class="hint">Runs increasing matrix-multiply sizes through numpy, timing each one, stopping once a round crosses 2 seconds. Sizes up to 256×256 also get a plain-JS comparison — bigger than that and a naive JS loop would freeze the tab, so it's numpy-only from there.</p>
+      <button id="bench-btn" disabled>Load Pyodide first</button>
+      <table class="bench-table">
+        <thead><tr><th>Size</th><th>numpy (Pyodide)</th><th>Plain JS</th></tr></thead>
+        <tbody id="bench-body"></tbody>
+      </table>
+      <p id="bench-summary" class="hint"></p>
+    </div>
+    <details class="source">
+      <summary>View source (benchmark)</summary>
+      <pre><code id="source-bench"></code></pre>
+    </details>
+
+    <div class="writeup">
+      <h2>Write-up</h2>
+      <p>The boot cost is real and up front — roughly 14.5MB has to land before any Python runs at all, which is a genuine cost on a slow connection or mobile data, not a rounding error. It's a one-time cost per browser cache, though: the CDN serves these files with a one-year cache lifetime, so a repeat visit skips the download entirely.</p>
+      <p>Once loaded, everything runs on the main thread — there's no Web Worker here, which means a big enough computation genuinely freezes the tab's UI while it runs, not just "feels slow." That's part of what the benchmark is actually measuring: not just numpy's raw speed, but the point past which making the visitor wait becomes a bad trade.</p>
+      <p>The numbers speak for themselves rather than a claimed multiplier — run it and compare the two columns directly.</p>
+      <p>Status: done.</p>
+    </div>
+
+    <nav class="pager">
+      <a href="../03-service-worker/">← 03 service worker</a>
+      <span class="disabled">next: not built yet</span>
+    </nav>
+  </div>
+
+  <script>
+    let pyodide = null;
+
+    function fmtMs(ms) {
+      return ms < 1000 ? Math.round(ms) + 'ms' : (ms / 1000).toFixed(2) + 's';
+    }
+
+    document.getElementById('load-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('load-btn');
+      const coreEl = document.getElementById('boot-core');
+      const numpyEl = document.getElementById('boot-numpy');
+      btn.disabled = true;
+
+      coreEl.textContent = 'loading…';
+      const coreStart = performance.now();
+      pyodide = await loadPyodide();
+      coreEl.textContent = fmtMs(performance.now() - coreStart);
+
+      numpyEl.textContent = 'loading…';
+      const numpyStart = performance.now();
+      await pyodide.loadPackage('numpy');
+      numpyEl.textContent = fmtMs(performance.now() - numpyStart);
+
+      btn.textContent = 'Loaded';
+      const benchBtn = document.getElementById('bench-btn');
+      benchBtn.disabled = false;
+      benchBtn.textContent = 'Run benchmark';
+    });
+
+    document.getElementById('source-boot').textContent = document.currentScript.textContent;
+  </script>
+
+  <script>
+    const SIZES = [64, 128, 256, 512, 1024];
+    const JS_COMPARISON_LIMIT = 256;
+    const SLOW_THRESHOLD_MS = 2000;
+
+    async function timeNumpyMatmul(n) {
+      const code = `
+import numpy as np
+import time
+a = np.random.rand(${n}, ${n})
+b = np.random.rand(${n}, ${n})
+start = time.time()
+c = a @ b
+time.time() - start
+`;
+      const elapsedSeconds = await pyodide.runPythonAsync(code);
+      return elapsedSeconds * 1000;
+    }
+
+    function randMatrix(n) {
+      const m = new Float64Array(n * n);
+      for (let i = 0; i < m.length; i++) m[i] = Math.random();
+      return m;
+    }
+
+    function jsMatmulMs(n) {
+      const a = randMatrix(n);
+      const b = randMatrix(n);
+      const start = performance.now();
+      const c = new Float64Array(n * n);
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          let sum = 0;
+          for (let k = 0; k < n; k++) sum += a[i * n + k] * b[k * n + j];
+          c[i * n + j] = sum;
+        }
+      }
+      return performance.now() - start;
+    }
+
+    function appendRow(n, pyMs, jsMs) {
+      const row = document.createElement('tr');
+      row.innerHTML =
+        '<td>' + n + '×' + n + '</td>' +
+        '<td class="num">' + fmtMs(pyMs) + '</td>' +
+        '<td class="num">' + (jsMs === null ? '—' : fmtMs(jsMs)) + '</td>';
+      document.getElementById('bench-body').appendChild(row);
+    }
+
+    function yieldToPaint() {
+      return new Promise((resolve) => setTimeout(resolve, 0));
+    }
+
+    document.getElementById('bench-btn').addEventListener('click', async () => {
+      const btn = document.getElementById('bench-btn');
+      const summary = document.getElementById('bench-summary');
+      btn.disabled = true;
+      document.getElementById('bench-body').innerHTML = '';
+      summary.textContent = '';
+
+      for (const n of SIZES) {
+        await yieldToPaint();
+        const pyMs = await timeNumpyMatmul(n);
+        const jsMs = n <= JS_COMPARISON_LIMIT ? jsMatmulMs(n) : null;
+        appendRow(n, pyMs, jsMs);
+
+        if (pyMs > SLOW_THRESHOLD_MS) {
+          summary.textContent = 'Stopped at ' + n + '×' + n + ' — took ' + fmtMs(pyMs) + ', over the ' + SLOW_THRESHOLD_MS + 'ms threshold. That\'s the practical ceiling on this device, right now.';
+          btn.disabled = false;
+          btn.textContent = 'Run again';
+          return;
+        }
+      }
+
+      summary.textContent = 'Reached the end of the test list (up to ' + SIZES[SIZES.length - 1] + '×' + SIZES[SIZES.length - 1] + ') without crossing the ' + SLOW_THRESHOLD_MS + 'ms threshold — this device handles it comfortably.';
+      btn.disabled = false;
+      btn.textContent = 'Run again';
+    });
+
+    document.getElementById('source-bench').textContent = document.currentScript.textContent;
+  </script>
+</body>
+</html>
