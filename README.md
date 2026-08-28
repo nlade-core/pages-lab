@@ -15,4 +15,16 @@ Root page is an index of experiments. Each one lives at `NN-name/` — numbered 
 | [Actions-triggered content update latency](05-actions-latency/) | done |
 | [Max practical repo/site size](06-repo-size/) | done |
 
+## What this found
+
+- **Routing**: deep links into client-side routes need a real workaround (a custom `404.html` redirect trick) — not free, costs a visible address-bar flicker.
+- **Offline caching**: works, but only for exactly what's explicitly precached, scoped to one directory — not "the site works offline," just the specific files told to.
+- **Pyodide**: real ~14.5MB upfront cost, genuinely works after that — the actual numeric ceiling is measured live on the page, not asserted.
+- **Scheduled updates**: take real minutes, not seconds — schedule slip plus deploy time both measured directly against GitHub's own API.
+- **Size limits**: individual files hard-block at 100MB, repos/sites are soft-capped around 1GB — irrelevant in practice for a project this size (a small fraction of a percent of the ceiling).
+
+## What's next
+
+Same six tests, re-run against another static host (Cloudflare Pages) for a real side-by-side comparison, rather than an isolated GitHub Pages study.
+
 Site: https://nlade-core.github.io/pages-lab/
