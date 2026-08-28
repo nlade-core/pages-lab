@@ -10,7 +10,7 @@ Root page is an index of experiments. Each one lives at `NN-name/` — numbered 
 |---|---|
 | [Hello world](01-hello-world/) | done |
 | [Client-side routing without server rewrites](02-routing/) | done |
-| Service-worker offline caching | not started |
+| [Service-worker offline caching](03-service-worker/) | done |
 | Pyodide numeric ceiling (browser Python performance) | not started |
 | Actions-triggered content update latency | not started |
 | Max practical repo/site size | not started |

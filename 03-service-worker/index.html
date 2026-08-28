@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>service worker — pages-lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img, picture, video, canvas, svg { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3 { overflow-wrap: break-word; }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #555555;
+    --border: #dddddd;
+    --accent: #0a58ca;
+    --accent-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa4af;
+      --border: #30363d;
+      --accent: #6ea8fe;
+      --accent-fg: #0d1117;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1.5rem;
+  }
+
+  .layout {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+  h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
+  .tagline { color: var(--muted); margin-bottom: 1rem; }
+
+  details.lang-toggle { margin-bottom: 1.5rem; }
+  details.lang-toggle summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  details.lang-toggle summary:hover { color: var(--fg); }
+  details.lang-toggle p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .demo-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .status-row:last-of-type { border-bottom: none; }
+  .status-row .value { font-weight: 600; }
+
+  .cached-list {
+    margin-top: 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  button {
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+  button:hover { opacity: 0.9; }
+  button.secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+  .clear-btn, .reload-btn { margin-top: 1rem; }
+
+  details.source {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  details.source summary {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  details.source pre {
+    margin-top: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  details.source code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    white-space: pre;
+  }
+
+  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
+  .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .writeup p { margin-bottom: 0.75rem; }
+
+  nav.pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  nav.pager a { color: var(--accent); text-decoration: none; }
+  nav.pager a:hover { text-decoration: underline; }
+  nav.pager .disabled { color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="layout">
+    <div class="header">
+      <a class="back" href="../">← pages-lab</a>
+      <h1>service worker</h1>
+      <p class="tagline">If you visit this page once and then lose your connection — flight mode, dead signal, wherever — does it still show you something, or just the browser's blank error? Why bother: this is literally how offline-capable web apps work.</p>
+      <details class="lang-toggle">
+        <summary>Technical version</summary>
+        <p>Registers a service worker scoped to this experiment's own directory. On install it precaches this page; on every later request within scope, its fetch handler serves cache-first, falling back to network. Matters beyond this lab: any "installable" PWA (Twitter Lite and most offline-capable web apps) runs on this exact mechanism — and the classic "why isn't my update showing up" bug comes from this same cache not being invalidated properly, which the versioned cache name here is the standard fix for.</p>
+      </details>
+    </div>
+
+    <div class="demo-block">
+      <h2>Cache status</h2>
+      <p class="hint">Live, not claimed — this reads your browser's real connection state and the actual contents of the cache.</p>
+      <div class="status-row"><span>Connection</span><span class="value" id="net-status">—</span></div>
+      <div class="status-row"><span>Service worker</span><span class="value" id="sw-status">registering…</span></div>
+      <div class="cached-list" id="cached-list">—</div>
+      <button class="clear-btn secondary" id="clear-btn">Clear cache &amp; unregister</button>
+    </div>
+    <details class="source">
+      <summary>View source (registration)</summary>
+      <pre><code id="source-registration"></code></pre>
+    </details>
+
+    <div class="demo-block">
+      <h2>Test it for real</h2>
+      <p class="hint">Turn on airplane mode (or disconnect your network entirely), then reload this page. If it still loads, the service worker served it from cache — not simulated, your actual connection.</p>
+      <button class="reload-btn" id="reload-btn">Reload this page</button>
+    </div>
+    <details class="source">
+      <summary>View source (service worker)</summary>
+      <pre><code id="source-sw">fetching…</code></pre>
+    </details>
+
+    <div class="writeup">
+      <h2>Write-up</h2>
+      <p>The first visit has to be online — nothing gets cached until it's fetched at least once, so "works offline" only kicks in after that first successful load. The service worker is also scoped to this one directory: it doesn't make the rest of pages-lab, or the internet generally, work offline, only the files explicitly listed for precaching here.</p>
+      <p>The well-known gotcha: without a versioned cache name and cleanup on activate, a service worker will happily keep serving an old cached version forever, even after a real fix has shipped — that's the "why won't my update show up" bug every service worker tutorial eventually warns about. The cleanup here (old cache names get deleted on activate) is the standard mitigation, not a guarantee — bump the version string in sw.js and the old cache is swept on the next activation.</p>
+      <p>Requires HTTPS (or localhost for local testing) — GitHub Pages serves over HTTPS by default, so that's a non-issue here, but it's worth knowing this silently doesn't work over plain HTTP.</p>
+      <p>Status: done.</p>
+    </div>
+
+    <nav class="pager">
+      <a href="../02-routing/">← 02 routing</a>
+      <span class="disabled">next: not built yet</span>
+    </nav>
+  </div>
+
+  <script>
+    const CACHE_NAME = 'pages-lab-03-service-worker-v1';
+    const netEl = document.getElementById('net-status');
+    const swEl = document.getElementById('sw-status');
+    const cachedListEl = document.getElementById('cached-list');
+
+    function updateNetStatus() {
+      netEl.textContent = navigator.onLine ? 'online' : 'offline';
+    }
+    window.addEventListener('online', updateNetStatus);
+    window.addEventListener('offline', updateNetStatus);
+    updateNetStatus();
+
+    async function updateCacheList() {
+      if (!('caches' in window)) {
+        cachedListEl.textContent = 'Cache API not available in this browser.';
+        return;
+      }
+      const cache = await caches.open(CACHE_NAME);
+      const keys = await cache.keys();
+      cachedListEl.textContent = keys.length
+        ? 'Cached: ' + keys.map((r) => r.url).join(', ')
+        : 'Nothing cached yet.';
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        swEl.textContent = 'registered';
+        updateCacheList();
+      }).catch((err) => {
+        swEl.textContent = 'registration failed: ' + err.message;
+      });
+      navigator.serviceWorker.ready.then(() => {
+        swEl.textContent = 'active';
+        updateCacheList();
+      });
+    } else {
+      swEl.textContent = 'not supported in this browser';
+    }
+
+    document.getElementById('clear-btn').addEventListener('click', async () => {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((r) => r.unregister()));
+      await caches.delete(CACHE_NAME);
+      swEl.textContent = 'unregistered — reload to re-register';
+      updateCacheList();
+    });
+
+    document.getElementById('reload-btn').addEventListener('click', () => {
+      location.reload();
+    });
+
+    document.getElementById('source-registration').textContent = document.currentScript.textContent;
+  </script>
+
+  <script>
+    fetch('sw.js')
+      .then((r) => r.text())
+      .then((text) => {
+        document.getElementById('source-sw').textContent = text;
+      })
+      .catch(() => {
+        document.getElementById('source-sw').textContent =
+          'Could not fetch sw.js — this needs to run over http (Live Server), not opened directly as a file://.';
+      });
+  </script>
+</body>
+</html>
