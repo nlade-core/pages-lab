@@ -127,7 +127,7 @@
 <body>
   <div class="layout">
     <div class="header">
-      <a class="back" href="../../">← pages-lab</a>
+      <a class="back" href="../">← pages-lab</a>
       <h1>routing</h1>
       <p class="tagline">Can links to "sub-pages" that don't really exist as files still work, even though GitHub Pages can't fake them on the server side? Why bother: this is the difference between a shared link landing on the right page or on a broken one.</p>
       <details class="lang-toggle">
@@ -140,9 +140,9 @@
       <h2>In-page navigation</h2>
       <p class="hint">These switch the URL without a full page reload.</p>
       <nav class="routes">
-        <a href="/pages-lab/experiments/routing/one" data-route="one">Section one</a>
-        <a href="/pages-lab/experiments/routing/two" data-route="two">Section two</a>
-        <a href="/pages-lab/experiments/routing/three" data-route="three">Section three</a>
+        <a href="/pages-lab/02-routing/one" data-route="one">Section one</a>
+        <a href="/pages-lab/02-routing/two" data-route="two">Section two</a>
+        <a href="/pages-lab/02-routing/three" data-route="three">Section three</a>
       </nav>
       <div id="route-status"></div>
       <div id="route-content">Pick a section above.</div>
@@ -157,11 +157,11 @@
       <p class="hint">These are real links. GitHub Pages has no file at either address, so without the 404 fix each one would just hit GitHub's blank default 404. Open one in a new tab, or copy it into a fresh tab, to see the recovery happen for real — not simulated.</p>
       <ul class="deep-links">
         <li>
-          <a href="https://nlade-core.github.io/pages-lab/experiments/routing/two" target="_blank" rel="noopener">.../experiments/routing/two</a>
+          <a href="https://nlade-core.github.io/pages-lab/02-routing/two" target="_blank" rel="noopener">.../02-routing/two</a>
           <span class="note">— a real section, should land correctly</span>
         </li>
         <li>
-          <a href="https://nlade-core.github.io/pages-lab/experiments/routing/nowhere" target="_blank" rel="noopener">.../experiments/routing/nowhere</a>
+          <a href="https://nlade-core.github.io/pages-lab/02-routing/nowhere" target="_blank" rel="noopener">.../02-routing/nowhere</a>
           <span class="note">— not a real section, should show a friendly "not found" instead of GitHub's default</span>
         </li>
       </ul>
@@ -179,7 +179,7 @@
   </div>
 
   <script>
-    var BASE = '/pages-lab/experiments/routing/';
+    var BASE = '/pages-lab/02-routing/';
     var SECTIONS = {
       one: 'Section one. Reached without a page reload if you clicked here, or recovered from a redirect if you loaded this URL fresh.',
       two: 'Section two. Same deal — check the status line above for how this particular view was reached.',
@@ -239,7 +239,7 @@
   </script>
 
   <script>
-    fetch('../../404.html')
+    fetch('../404.html')
       .then(function (r) { return r.text(); })
       .then(function (text) {
         document.getElementById('source-404').textContent = text;
