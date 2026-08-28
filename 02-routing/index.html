@@ -234,7 +234,11 @@
         contentEl.textContent = SECTIONS[slug];
       } else {
         statusEl.textContent = 'arrived via: ' + reachedNote;
-        contentEl.innerHTML = '<span class="missing">No such section: "' + slug + '". This is the router\'s own not-found state, distinct from GitHub\'s.</span>';
+        contentEl.textContent = '';
+        const missing = document.createElement('span');
+        missing.className = 'missing';
+        missing.textContent = 'No such section: "' + slug + '". This is the router\'s own not-found state, distinct from GitHub\'s.';
+        contentEl.appendChild(missing);
       }
     }
 
