@@ -3,7 +3,7 @@
 // cache name is what lets a later deploy invalidate the old cache cleanly
 // on activate -- the standard fix for the classic "why won't my update
 // show up" service worker bug.
-const CACHE_NAME = 'pages-lab-03-service-worker-v1';
+const CACHE_NAME = 'pages-lab-03-service-worker-v2';
 const PRECACHE_URLS = ['./', './index.html'];
 
 self.addEventListener('install', (event) => {
