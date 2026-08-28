@@ -48,6 +48,19 @@
   h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
   .tagline { color: var(--muted); margin-bottom: 1rem; }
 
+  details.lang-toggle { margin-bottom: 1.5rem; }
+  details.lang-toggle summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  details.lang-toggle summary:hover { color: var(--fg); }
+  details.lang-toggle p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
   .demo-block {
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -55,6 +68,7 @@
     margin-bottom: 1.25rem;
   }
   .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
 
   button {
     background: var(--accent);
@@ -71,7 +85,6 @@
   #clock { font-variant-numeric: tabular-nums; font-size: 1.1rem; }
 
   canvas { border-radius: 6px; background: var(--bg); touch-action: none; cursor: crosshair; }
-  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
   .clear-btn { margin-top: 0.75rem; }
 
   details.source {
@@ -113,19 +126,6 @@
   nav.pager a { color: var(--accent); text-decoration: none; }
   nav.pager a:hover { text-decoration: underline; }
   nav.pager .disabled { color: var(--muted); }
-
-  details.lang-toggle { margin-bottom: 1.5rem; }
-  details.lang-toggle summary {
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: var(--muted);
-  }
-  details.lang-toggle summary:hover { color: var(--fg); }
-  details.lang-toggle p {
-    margin-top: 0.5rem;
-    color: var(--muted);
-    font-size: 0.95rem;
-  }
 </style>
 </head>
 <body>
@@ -178,7 +178,7 @@
     </div>
 
     <nav class="pager">
-      <span class="disabled">← previous</span>
+      <span class="disabled">previous: none</span>
       <a href="../02-routing/">02 routing →</a>
     </nav>
   </div>

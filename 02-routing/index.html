@@ -196,15 +196,15 @@
   </div>
 
   <script>
-    var BASE = '/pages-lab/02-routing/';
-    var SECTIONS = {
+    const BASE = '/pages-lab/02-routing/';
+    const SECTIONS = {
       one: 'Section one. Reached without a page reload if you clicked here, or recovered from a redirect if you loaded this URL fresh.',
       two: 'Section two. Same deal — check the status line above for how this particular view was reached.',
       three: 'Section three. The router doesn\'t care how it got the path, only what the path says right now.'
     };
 
-    var howReached = 'loaded directly, no redirect needed';
-    var pending = sessionStorage.getItem('pages-lab-redirect');
+    let howReached = 'loaded directly, no redirect needed';
+    const pending = sessionStorage.getItem('pages-lab-redirect');
     if (pending) {
       sessionStorage.removeItem('pages-lab-redirect');
       history.replaceState(null, '', pending);
@@ -212,17 +212,17 @@
     }
 
     function currentSlug() {
-      var path = location.pathname;
+      const path = location.pathname;
       if (path.indexOf(BASE) !== 0) return '';
       return path.slice(BASE.length).replace(/\/+$/, '');
     }
 
     function render(reachedNote) {
-      var slug = currentSlug();
-      var statusEl = document.getElementById('route-status');
-      var contentEl = document.getElementById('route-content');
+      const slug = currentSlug();
+      const statusEl = document.getElementById('route-status');
+      const contentEl = document.getElementById('route-content');
 
-      document.querySelectorAll('nav.routes a').forEach(function (a) {
+      document.querySelectorAll('nav.routes a').forEach((a) => {
         a.classList.toggle('current', a.dataset.route === slug);
       });
 
@@ -238,15 +238,15 @@
       }
     }
 
-    document.querySelectorAll('nav.routes a').forEach(function (a) {
-      a.addEventListener('click', function (e) {
+    document.querySelectorAll('nav.routes a').forEach((a) => {
+      a.addEventListener('click', (e) => {
         e.preventDefault();
         history.pushState(null, '', a.getAttribute('href'));
         render('in-page click, no reload');
       });
     });
 
-    window.addEventListener('popstate', function () {
+    window.addEventListener('popstate', () => {
       render('back/forward navigation');
     });
 
@@ -257,11 +257,11 @@
 
   <script>
     fetch('../404.html')
-      .then(function (r) { return r.text(); })
-      .then(function (text) {
+      .then((r) => r.text())
+      .then((text) => {
         document.getElementById('source-404').textContent = text;
       })
-      .catch(function () {
+      .catch(() => {
         document.getElementById('source-404').textContent =
           'Could not fetch 404.html — this needs to run over http (Live Server), not opened directly as a file://.';
       });
