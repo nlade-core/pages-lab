@@ -240,6 +240,10 @@
         cachedListEl.textContent = 'Cache API not available in this browser.';
         return;
       }
+      if (!(await caches.has(CACHE_NAME))) {
+        cachedListEl.textContent = 'Nothing cached yet.';
+        return;
+      }
       const cache = await caches.open(CACHE_NAME);
       const keys = await cache.keys();
       cachedListEl.textContent = keys.length
