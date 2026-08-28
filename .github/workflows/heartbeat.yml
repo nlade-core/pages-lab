@@ -1,0 +1,26 @@
+name: Heartbeat
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update heartbeat timestamp
+        run: date -u +"%Y-%m-%dT%H:%M:%SZ" > 05-actions-latency/heartbeat.txt
+
+      - name: Commit and push
+        run: |
+          git config user.name "heartbeat-bot"
+          git config user.email "actions@github.com"
+          git add 05-actions-latency/heartbeat.txt
+          git diff --staged --quiet || git commit -m "chore: heartbeat $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push

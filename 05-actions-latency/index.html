@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>actions latency — pages-lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img, picture, video, canvas, svg { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3 { overflow-wrap: break-word; }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #555555;
+    --border: #dddddd;
+    --accent: #0a58ca;
+    --accent-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa4af;
+      --border: #30363d;
+      --accent: #6ea8fe;
+      --accent-fg: #0d1117;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1.5rem;
+  }
+
+  .layout {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+  h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
+  .tagline { color: var(--muted); margin-bottom: 1rem; }
+
+  details.lang-toggle { margin-bottom: 1.5rem; }
+  details.lang-toggle summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  details.lang-toggle summary:hover { color: var(--fg); }
+  details.lang-toggle p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .demo-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.95rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .status-row:last-of-type { border-bottom: none; }
+  .status-row span:first-child { flex-shrink: 0; }
+  .status-row .value { font-weight: 600; text-align: right; }
+
+  button {
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    margin-top: 0.75rem;
+  }
+  button:hover { opacity: 0.9; }
+  button.secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  table.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+  }
+  table.history-table th, table.history-table td {
+    text-align: left;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  table.history-table th { color: var(--muted); font-weight: 600; }
+  table.history-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  #history-summary { margin-top: 0.75rem; }
+
+  details.source {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  details.source summary {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  details.source pre {
+    margin-top: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  details.source code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    white-space: pre;
+  }
+
+  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
+  .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .writeup p { margin-bottom: 0.75rem; }
+
+  nav.pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  nav.pager a { color: var(--accent); text-decoration: none; }
+  nav.pager a:hover { text-decoration: underline; }
+  nav.pager .disabled { color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="layout">
+    <div class="header">
+      <a class="back" href="../">← pages-lab</a>
+      <h1>actions latency</h1>
+      <p class="tagline">If something on this site updates itself automatically — no visitor involved, just time passing — how long does it actually take from "the update happened" to "you can see it"? Why bother: it's the real cost of not having a live server behind this.</p>
+      <details class="lang-toggle">
+        <summary>Technical version</summary>
+        <p>A scheduled GitHub Action commits a fresh timestamp every 30 minutes. Rather than fabricate a number, this pulls two of GitHub's own public, unauthenticated APIs live: commit history for the timestamp file, and the run history of GitHub's own <code>pages-build-deployment</code> workflow (the actual thing that rebuilds and deploys this site), correlated by commit SHA. The obvious <code>pages/builds</code> endpoint turned out to require auth even on a public repo — this works around that using the deployment workflow's own public run history instead.</p>
+      </details>
+    </div>
+
+    <div class="demo-block">
+      <h2>Live heartbeat</h2>
+      <p class="hint">Fetched fresh, not cached — this is the actual current state of the file the scheduled Action writes to.</p>
+      <div class="status-row"><span>Last update</span><span class="value" id="hb-time">loading…</span></div>
+      <div class="status-row"><span>That was</span><span class="value" id="hb-age">—</span></div>
+      <button class="secondary" id="check-btn">Check now</button>
+    </div>
+    <details class="source">
+      <summary>View source (heartbeat)</summary>
+      <pre><code id="source-heartbeat"></code></pre>
+    </details>
+
+    <div class="demo-block">
+      <h2>Real latency, from GitHub's own API</h2>
+      <p class="hint">Not one staged example — the last few real runs, pulled live. Each row: when the heartbeat commit actually landed, how far that was from the expected 30-minute slot, and how long GitHub Pages took to rebuild and go live after it.</p>
+      <button id="history-btn">Load recent history</button>
+      <table class="history-table">
+        <thead><tr><th>Committed</th><th>vs. 30m slot</th><th>Deploy time</th></tr></thead>
+        <tbody id="history-body"></tbody>
+      </table>
+      <p id="history-summary" class="hint"></p>
+    </div>
+    <details class="source">
+      <summary>View source (history)</summary>
+      <pre><code id="source-history"></code></pre>
+    </details>
+
+    <div class="writeup">
+      <h2>Write-up</h2>
+      <p>Two separate delays stack here, not one. First: GitHub explicitly documents that scheduled workflows aren't guaranteed to fire exactly on time — a 30-minute cron can slip by minutes during high load, so "how often" and "how promptly" are different, both-honest numbers. Second: once the commit lands, GitHub Pages still has to actually rebuild and deploy, which the history table above measures directly and separately from the first delay.</p>
+      <p>The commit timestamp already reflects whatever time the Action itself spent running before it pushed, so there's no need to separately measure the workflow's own execution time on top of this — it's already baked into when the commit landed.</p>
+      <p>The unauthenticated GitHub API is rate-limited to 60 requests/hour per IP — a real limit, unlikely to matter for occasional use here, but worth knowing if you refresh this a lot.</p>
+      <p>Status: done.</p>
+    </div>
+
+    <nav class="pager">
+      <a href="../04-pyodide/">← 04 pyodide</a>
+      <span class="disabled">next: not built yet</span>
+    </nav>
+  </div>
+
+  <script>
+    const HEARTBEAT_URL = 'heartbeat.txt';
+
+    function fmtAge(ms) {
+      const s = Math.floor(ms / 1000);
+      if (s < 60) return s + 's ago';
+      const m = Math.floor(s / 60);
+      if (m < 60) return m + 'm ' + (s % 60) + 's ago';
+      const h = Math.floor(m / 60);
+      return h + 'h ' + (m % 60) + 'm ago';
+    }
+
+    let lastTimestamp = null;
+
+    async function checkHeartbeat() {
+      const timeEl = document.getElementById('hb-time');
+      const ageEl = document.getElementById('hb-age');
+      timeEl.textContent = 'loading…';
+      try {
+        const res = await fetch(HEARTBEAT_URL + '?t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) throw new Error('not found yet (status ' + res.status + ')');
+        const text = (await res.text()).trim();
+        lastTimestamp = new Date(text);
+        timeEl.textContent = text;
+      } catch (e) {
+        timeEl.textContent = e.message;
+        lastTimestamp = null;
+      }
+    }
+
+    function tickAge() {
+      const ageEl = document.getElementById('hb-age');
+      if (!lastTimestamp) {
+        ageEl.textContent = '—';
+        return;
+      }
+      ageEl.textContent = fmtAge(Date.now() - lastTimestamp.getTime());
+    }
+
+    document.getElementById('check-btn').addEventListener('click', checkHeartbeat);
+    checkHeartbeat();
+    setInterval(tickAge, 1000);
+
+    document.getElementById('source-heartbeat').textContent = document.currentScript.textContent;
+  </script>
+
+  <script>
+    const REPO = 'nlade-core/pages-lab';
+    const PAGES_WORKFLOW_ID = 344573135;
+    const EXPECTED_INTERVAL_MIN = 30;
+
+    function fmtDuration(ms) {
+      const s = Math.round(ms / 1000);
+      return s < 60 ? s + 's' : (s / 60).toFixed(1) + 'm';
+    }
+
+    async function loadHistory() {
+      const btn = document.getElementById('history-btn');
+      const body = document.getElementById('history-body');
+      const summary = document.getElementById('history-summary');
+      btn.disabled = true;
+      body.innerHTML = '';
+      summary.textContent = 'fetching from GitHub’s API…';
+
+      try {
+        const commitsRes = await fetch(
+          'https://api.github.com/repos/' + REPO + '/commits?path=05-actions-latency/heartbeat.txt&per_page=6'
+        );
+        if (!commitsRes.ok) throw new Error('GitHub API returned ' + commitsRes.status + ' — likely rate-limited (60/hour, unauthenticated)');
+        const commits = await commitsRes.json();
+
+        const runsRes = await fetch(
+          'https://api.github.com/repos/' + REPO + '/actions/workflows/' + PAGES_WORKFLOW_ID + '/runs?per_page=30'
+        );
+        if (!runsRes.ok) throw new Error('GitHub API returned ' + runsRes.status);
+        const runsData = await runsRes.json();
+        const runs = runsData.workflow_runs || [];
+
+        if (commits.length === 0) {
+          summary.textContent = 'No heartbeat commits yet — the scheduled Action hasn’t run yet. Check back after the next 30-minute slot.';
+          btn.disabled = false;
+          return;
+        }
+
+        const rows = commits.map((c, i) => {
+          const committedAt = new Date(c.commit.committer.date);
+          const prev = commits[i + 1];
+          const gapMin = prev ? (committedAt - new Date(prev.commit.committer.date)) / 60000 : null;
+          const matchingRun = runs.find((r) => r.head_sha === c.sha);
+          const deployMs = matchingRun && matchingRun.status === 'completed'
+            ? new Date(matchingRun.updated_at) - committedAt
+            : null;
+          return { committedAt, gapMin, deployMs, matched: !!matchingRun };
+        });
+
+        rows.forEach((r) => {
+          const row = document.createElement('tr');
+          const gapText = r.gapMin === null
+            ? '—'
+            : (r.gapMin >= EXPECTED_INTERVAL_MIN ? '+' : '') + (r.gapMin - EXPECTED_INTERVAL_MIN).toFixed(1) + 'm';
+          const deployText = r.deployMs === null
+            ? (r.matched ? 'in progress' : 'no matching deploy found')
+            : fmtDuration(r.deployMs);
+          row.innerHTML =
+            '<td>' + r.committedAt.toISOString().replace('T', ' ').slice(0, 19) + '</td>' +
+            '<td class="num">' + gapText + '</td>' +
+            '<td class="num">' + deployText + '</td>';
+          body.appendChild(row);
+        });
+
+        const withDeploy = rows.filter((r) => r.deployMs !== null);
+        if (withDeploy.length > 0) {
+          const avgDeploy = withDeploy.reduce((sum, r) => sum + r.deployMs, 0) / withDeploy.length;
+          summary.textContent = 'Average commit-to-live across ' + withDeploy.length + ' matched run(s): ' + fmtDuration(avgDeploy) + '. "vs. 30m slot" shows how far each commit landed from the expected schedule.';
+        } else {
+          summary.textContent = 'Fetched ' + commits.length + ' commit(s), but couldn’t match a completed deploy run yet — try again shortly.';
+        }
+      } catch (e) {
+        summary.textContent = 'Could not load: ' + e.message;
+      }
+      btn.disabled = false;
+    }
+
+    document.getElementById('history-btn').addEventListener('click', loadHistory);
+
+    document.getElementById('source-history').textContent = document.currentScript.textContent;
+  </script>
+</body>
+</html>
