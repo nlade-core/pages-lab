@@ -2,7 +2,7 @@
 
 Testing what GitHub Pages can actually do, and where it stops — live, not in prose.
 
-Later: the same tests re-run against Cloudflare Pages for a real comparison.
+Later: the same tests re-run against another static host for a real comparison.
 
 ## Test scoreboard
 
