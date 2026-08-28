@@ -47,14 +47,16 @@
       max-width: 1040px;
       display: grid;
       grid-template-columns: 640px 1fr;
-      gap: 2.5rem;
+      gap: 1.25rem 2.5rem;
       align-items: start;
     }
+    .header, .writeup { grid-column: 1 / -1; }
   }
+
   a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
   a.back:hover { text-decoration: underline; }
   h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
-  .tagline { color: var(--muted); margin-bottom: 2rem; }
+  .tagline { color: var(--muted); margin-bottom: 1rem; }
 
   .demo-block {
     border: 1px solid var(--border);
@@ -80,16 +82,12 @@
 
   canvas { border-radius: 6px; background: var(--bg); }
 
-  .source-panel {
-    margin-bottom: 1.25rem;
-  }
-  @media (min-width: 1000px) {
-    .source-panel { position: sticky; top: 2rem; }
-  }
   details.source {
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+    align-self: start;
   }
   details.source summary {
     cursor: pointer;
@@ -101,7 +99,7 @@
     margin-top: 1rem;
     overflow-x: auto;
     font-size: 0.85rem;
-    max-height: 70vh;
+    max-height: 50vh;
     overflow-y: auto;
   }
   details.source code {
@@ -109,47 +107,52 @@
     white-space: pre;
   }
 
-  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 2.5rem; }
+  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
   .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
   .writeup p { margin-bottom: 0.75rem; }
 </style>
 </head>
 <body>
   <div class="layout">
-    <div class="main">
+    <div class="header">
       <a class="back" href="../../">← pages-lab</a>
       <h1>hello world</h1>
-      <p class="tagline">Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend?</p>
-
-      <div class="demo-block">
-        <h2>Click counter</h2>
-        <button id="counter-btn">Click me</button>
-        <span id="count">0</span>
-      </div>
-
-      <div class="demo-block">
-        <h2>Live clock</h2>
-        <div id="clock">--:--:--</div>
-      </div>
-
-      <div class="demo-block">
-        <h2>Canvas draw</h2>
-        <canvas id="canvas" width="300" height="120"></canvas>
-      </div>
-
-      <div class="writeup">
-        <h2>Write-up</h2>
-        <p>All three of these run entirely in the browser — no server, no build step, no API call. That's the baseline every later experiment here builds on: if plain JS/DOM/Canvas works, the interesting question for each next test is what stops working (or gets expensive) as the demo gets heavier — Pyodide's numeric ceiling, Actions round-trip latency, offline caching, and so on.</p>
-        <p>Status: done. Next: Pyodide numeric ceiling.</p>
-      </div>
+      <p class="tagline">Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend? Each demo's own code sits next to it — click "View source" to compare.</p>
     </div>
 
-    <aside class="source-panel">
-      <details class="source">
-        <summary>View source</summary>
-        <pre><code id="source-code"></code></pre>
-      </details>
-    </aside>
+    <div class="demo-block">
+      <h2>Click counter</h2>
+      <button id="counter-btn">Click me</button>
+      <span id="count">0</span>
+    </div>
+    <details class="source">
+      <summary>View source</summary>
+      <pre><code id="source-counter"></code></pre>
+    </details>
+
+    <div class="demo-block">
+      <h2>Live clock</h2>
+      <div id="clock">--:--:--</div>
+    </div>
+    <details class="source">
+      <summary>View source</summary>
+      <pre><code id="source-clock"></code></pre>
+    </details>
+
+    <div class="demo-block">
+      <h2>Canvas draw</h2>
+      <canvas id="canvas" width="300" height="120"></canvas>
+    </div>
+    <details class="source">
+      <summary>View source</summary>
+      <pre><code id="source-canvas"></code></pre>
+    </details>
+
+    <div class="writeup">
+      <h2>Write-up</h2>
+      <p>All three of these run entirely in the browser — no server, no build step, no API call. That's the baseline every later experiment here builds on: if plain JS/DOM/Canvas works, the interesting question for each next test is what stops working (or gets expensive) as the demo gets heavier — Pyodide's numeric ceiling, Actions round-trip latency, offline caching, and so on.</p>
+      <p>Status: done. Next: Pyodide numeric ceiling.</p>
+    </div>
   </div>
 
   <script>
@@ -160,6 +163,10 @@
       countEl.textContent = count;
     });
 
+    document.getElementById('source-counter').textContent = document.currentScript.textContent;
+  </script>
+
+  <script>
     const clockEl = document.getElementById('clock');
     function tick() {
       clockEl.textContent = new Date().toLocaleTimeString();
@@ -167,6 +174,10 @@
     tick();
     setInterval(tick, 1000);
 
+    document.getElementById('source-clock').textContent = document.currentScript.textContent;
+  </script>
+
+  <script>
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const cssAccent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
@@ -182,7 +193,7 @@
     }
     draw();
 
-    document.getElementById('source-code').textContent = document.currentScript.textContent;
+    document.getElementById('source-canvas').textContent = document.currentScript.textContent;
   </script>
 </body>
 </html>
