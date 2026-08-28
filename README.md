@@ -13,6 +13,6 @@ Root page is an index of experiments. Each one lives at `NN-name/` — numbered 
 | [Service-worker offline caching](03-service-worker/) | done |
 | [Pyodide numeric ceiling](04-pyodide/) | done |
 | [Actions-triggered content update latency](05-actions-latency/) | done |
-| Max practical repo/site size | not started |
+| [Max practical repo/site size](06-repo-size/) | done |
 
 Site: https://nlade-core.github.io/pages-lab/

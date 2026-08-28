@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>repo size — pages-lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img, picture, video, canvas, svg { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3 { overflow-wrap: break-word; }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #555555;
+    --border: #dddddd;
+    --accent: #0a58ca;
+    --accent-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa4af;
+      --border: #30363d;
+      --accent: #6ea8fe;
+      --accent-fg: #0d1117;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1.5rem;
+  }
+
+  .layout {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+  h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
+  .tagline { color: var(--muted); margin-bottom: 1rem; }
+
+  details.lang-toggle { margin-bottom: 1.5rem; }
+  details.lang-toggle summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  details.lang-toggle summary:hover { color: var(--fg); }
+  details.lang-toggle p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .demo-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+
+  table.limits-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  table.limits-table th, table.limits-table td {
+    text-align: left;
+    padding: 0.5rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.limits-table th { color: var(--muted); font-weight: 600; }
+  .result-ok { color: var(--accent); font-weight: 600; }
+  .result-blocked { color: var(--muted); font-weight: 600; }
+  .raw-text {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: var(--bg);
+    display: block;
+    margin-top: 0.35rem;
+    white-space: pre-wrap;
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.95rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .status-row:last-of-type { border-bottom: none; }
+  .status-row span:first-child { flex-shrink: 0; }
+  .status-row .value { font-weight: 600; text-align: right; }
+
+  button {
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    margin-top: 0.75rem;
+  }
+  button:hover { opacity: 0.9; }
+  button.secondary {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+
+  details.source {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  details.source summary {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  details.source pre {
+    margin-top: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  details.source code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    white-space: pre;
+  }
+
+  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
+  .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .writeup p { margin-bottom: 0.75rem; }
+
+  nav.pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  nav.pager a { color: var(--accent); text-decoration: none; }
+  nav.pager a:hover { text-decoration: underline; }
+  nav.pager .disabled { color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="layout">
+    <div class="header">
+      <a class="back" href="../">← pages-lab</a>
+      <h1>repo size</h1>
+      <p class="tagline">At what point does GitHub actually push back on a project being too big — and how far is this whole six-part lab from any of those points? Why bother: it's the difference between "technically unlimited" and what actually happens if you push it.</p>
+      <details class="lang-toggle">
+        <summary>Technical version</summary>
+        <p>Two real thresholds tested directly, not cited from docs alone: pushing a 50-100 MiB file triggers a warning; pushing over 100 MiB gets hard-blocked by GitHub's pre-receive hook. Done in a disposable scratch repo, not this one — a rejected push still means the object briefly touched a remote, and a large file that succeeds lives in git history forever unless the history itself is rewritten, which this project won't do just to make a point. Combined with GitHub's own published soft limits for repo size, Pages site size, and bandwidth.</p>
+      </details>
+    </div>
+
+    <div class="demo-block">
+      <h2>Tested directly</h2>
+      <p class="hint">Real pushes, real GitHub responses — done in a separate, disposable repo created just for this test, meant to be removed once it's no longer needed, specifically so this bloat never touches pages-lab's own history.</p>
+      <table class="limits-table">
+        <thead><tr><th>Push</th><th>Result</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>60 MB file</td>
+            <td>
+              <span class="result-ok">Succeeded, with a warning</span>
+              <code class="raw-text">remote: warning: File file-60mb.bin is 60.00 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB</code>
+            </td>
+          </tr>
+          <tr>
+            <td>105 MB file</td>
+            <td>
+              <span class="result-blocked">Rejected</span>
+              <code class="raw-text">remote: error: File file-105mb.bin is 105.00 MB; this exceeds GitHub's file size limit of 100.00 MB
+! [remote rejected] main -&gt; main (pre-receive hook declined)</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="demo-block">
+      <h2>This repo, right now</h2>
+      <p class="hint">Live, not a snapshot — pulled fresh from GitHub's own public API, same pattern as the Actions-latency experiment.</p>
+      <div class="status-row"><span>pages-lab's actual size</span><span class="value" id="repo-size">loading…</span></div>
+      <div class="status-row"><span>vs. the 1GB Pages site limit</span><span class="value" id="repo-pct">—</span></div>
+      <button class="secondary" id="size-btn">Check current size</button>
+    </div>
+    <details class="source">
+      <summary>View source</summary>
+      <pre><code id="source-size"></code></pre>
+    </details>
+
+    <div class="writeup">
+      <h2>Write-up</h2>
+      <p>GitHub's own docs (cited, not paraphrased from memory): individual files get a warning past 50 MiB and are hard-blocked past 100 MiB — confirmed directly above, exact numbers match. Beyond single files: repos are recommended to stay under 1GB (under 5GB "strongly recommended" as a hard outer bound), a GitHub Pages source repo has the same 1GB recommended limit, and a published Pages site itself is capped at 1GB. None of that is enforced by testing here — actually reproducing a 1GB+ repo just to watch it get flagged isn't a reasonable thing to do to GitHub's infrastructure for a demo.</p>
+      <p>Two more documented limits that aren't practically testable at all without real cost: bandwidth is soft-capped at 100GB/month, and Pages builds are soft-limited to 10/hour (though that specific cap doesn't apply to a site built via a custom Actions workflow, which is worth knowing if you ever lean on that harder than this project has).</p>
+      <p>Where this project actually sits: check the number above. Six experiments, plain HTML/CSS/JS, no images or binaries — nowhere close to any of these ceilings, and that's itself the honest finding: for a project shaped like this one, the limits are effectively irrelevant. They start to matter the moment binary assets, datasets, or build artifacts enter the picture, none of which pages-lab ever needed.</p>
+      <p>Status: done. This is the last one — pages-lab's six-part progression ends here.</p>
+    </div>
+
+    <nav class="pager">
+      <a href="../05-actions-latency/">← 05 actions latency</a>
+      <span class="disabled">next: none — that's all six</span>
+    </nav>
+  </div>
+
+  <script>
+    const REPO_API = 'https://api.github.com/repos/nlade-core/pages-lab';
+    const PAGES_LIMIT_KB = 1024 * 1024; // 1GB in KB, matching GitHub's own unit for repo "size"
+
+    async function checkSize() {
+      const sizeEl = document.getElementById('repo-size');
+      const pctEl = document.getElementById('repo-pct');
+      sizeEl.textContent = 'loading…';
+      try {
+        const res = await fetch(REPO_API);
+        if (!res.ok) throw new Error('GitHub API returned ' + res.status);
+        const data = await res.json();
+        const kb = data.size;
+        sizeEl.textContent = kb < 1024 ? kb + ' KB' : (kb / 1024).toFixed(2) + ' MB';
+        const pct = (kb / PAGES_LIMIT_KB) * 100;
+        pctEl.textContent = pct < 0.01 ? '<0.01%' : pct.toFixed(2) + '%';
+      } catch (e) {
+        sizeEl.textContent = e.message;
+        pctEl.textContent = '—';
+      }
+    }
+
+    document.getElementById('size-btn').addEventListener('click', checkSize);
+    checkSize();
+
+    document.getElementById('source-size').textContent = document.currentScript.textContent;
+  </script>
+</body>
+</html>
