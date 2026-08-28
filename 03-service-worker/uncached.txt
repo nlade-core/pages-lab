@@ -1,0 +1,4 @@
+This file was never listed in sw.js's PRECACHE_URLS. If you're seeing
+"failed" next to it while offline, that's expected -- it proves the
+service worker only serves what it was actually told to cache, not
+everything on the site.

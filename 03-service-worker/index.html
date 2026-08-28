@@ -85,6 +85,7 @@
   .status-row:last-of-type { border-bottom: none; }
   .status-row span:first-child { flex-shrink: 0; }
   .status-row .value { font-weight: 600; text-align: right; }
+  .status-row .tag { color: var(--muted); font-weight: 400; font-size: 0.85rem; }
 
   .cached-list {
     margin-top: 0.75rem;
@@ -179,6 +180,18 @@
     </details>
 
     <div class="demo-block">
+      <h2>Live comparison</h2>
+      <p class="hint">Two files, one told to be cached, one deliberately not. Check DevTools' Offline box (see the next block for how), then click the button — you should see one keep working and one genuinely fail, live, no reload needed.</p>
+      <div class="status-row"><span>index.html <span class="tag">(cached)</span></span><span class="value" id="cached-result">not tried yet</span></div>
+      <div class="status-row"><span>uncached.txt <span class="tag">(not cached)</span></span><span class="value" id="uncached-result">not tried yet</span></div>
+      <button class="secondary" id="compare-btn">Try fetching both now</button>
+    </div>
+    <details class="source">
+      <summary>View source (comparison)</summary>
+      <pre><code id="source-comparison"></code></pre>
+    </details>
+
+    <div class="demo-block">
       <h2>Test it for real</h2>
       <p class="hint">First, check the box above: "service worker" should say <strong>active</strong> and the cache list shouldn't be empty. That's this visit having actually cached the page — nothing below proves anything until that's true.</p>
       <ol class="steps">
@@ -262,6 +275,30 @@
     });
 
     document.getElementById('source-registration').textContent = document.currentScript.textContent;
+  </script>
+
+  <script>
+    async function tryFetch(url) {
+      try {
+        const res = await fetch(url, { cache: 'reload' });
+        return res.ok ? 'loaded' : 'failed (status ' + res.status + ')';
+      } catch (e) {
+        return 'failed — network unreachable';
+      }
+    }
+
+    document.getElementById('compare-btn').addEventListener('click', async () => {
+      document.getElementById('cached-result').textContent = 'checking…';
+      document.getElementById('uncached-result').textContent = 'checking…';
+      const [cachedResult, uncachedResult] = await Promise.all([
+        tryFetch('index.html'),
+        tryFetch('uncached.txt')
+      ]);
+      document.getElementById('cached-result').textContent = cachedResult;
+      document.getElementById('uncached-result').textContent = uncachedResult;
+    });
+
+    document.getElementById('source-comparison').textContent = document.currentScript.textContent;
   </script>
 
   <script>
