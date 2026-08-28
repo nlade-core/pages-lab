@@ -9,10 +9,10 @@ Root page is an index of experiments. Each experiment lives at `experiments/<nam
 | Experiment | Status |
 |---|---|
 | [Hello world](experiments/hello-world/) | done |
+| [Client-side routing without server rewrites](experiments/routing/) | done |
+| Service-worker offline caching | not started |
 | Pyodide numeric ceiling (browser Python performance) | not started |
 | Actions-triggered content update latency | not started |
-| Service-worker offline caching | not started |
-| Client-side routing without server rewrites | not started |
 | Max practical repo/site size | not started |
 
 Site: https://nlade-core.github.io/pages-lab/

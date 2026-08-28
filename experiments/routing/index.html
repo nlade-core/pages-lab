@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>routing — pages-lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img, picture, video, canvas, svg { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3 { overflow-wrap: break-word; }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #555555;
+    --border: #dddddd;
+    --accent: #0a58ca;
+    --accent-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa4af;
+      --border: #30363d;
+      --accent: #6ea8fe;
+      --accent-fg: #0d1117;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1.5rem;
+  }
+
+  .layout {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+  h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
+  .tagline { color: var(--muted); margin-bottom: 1rem; }
+
+  details.lang-toggle { margin-bottom: 1.5rem; }
+  details.lang-toggle summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  details.lang-toggle summary:hover { color: var(--fg); }
+  details.lang-toggle p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .demo-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+
+  nav.routes { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  nav.routes a {
+    background: var(--accent);
+    color: var(--accent-fg);
+    text-decoration: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+  }
+  nav.routes a:hover { opacity: 0.9; }
+  nav.routes a.current { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+  #route-status {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  #route-content { font-size: 0.95rem; }
+  #route-content .missing { color: var(--muted); font-style: italic; }
+
+  .deep-links { list-style: none; }
+  .deep-links li { margin-bottom: 0.5rem; font-size: 0.95rem; }
+  .deep-links a { color: var(--accent); }
+  .deep-links .note { color: var(--muted); font-size: 0.85rem; }
+
+  details.source {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  details.source summary {
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  details.source pre {
+    margin-top: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  details.source code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    white-space: pre;
+  }
+
+  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
+  .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .writeup p { margin-bottom: 0.75rem; }
+</style>
+</head>
+<body>
+  <div class="layout">
+    <div class="header">
+      <a class="back" href="../../">← pages-lab</a>
+      <h1>routing</h1>
+      <p class="tagline">Can links to "sub-pages" that don't really exist as files still work, even though GitHub Pages can't fake them on the server side?</p>
+      <details class="lang-toggle">
+        <summary>Technical version</summary>
+        <p>GitHub Pages serves files only, no server-side rewrites. Client-side routing (History API push/replaceState) works fine for in-page navigation, but a fresh load or refresh on a fake sub-path 404s because no matching file exists. This tests the standard workaround: a custom 404.html that redirects back with the intended path in sessionStorage.</p>
+      </details>
+    </div>
+
+    <div class="demo-block">
+      <h2>In-page navigation</h2>
+      <p class="hint">These switch the URL without a full page reload.</p>
+      <nav class="routes">
+        <a href="/pages-lab/experiments/routing/one" data-route="one">Section one</a>
+        <a href="/pages-lab/experiments/routing/two" data-route="two">Section two</a>
+        <a href="/pages-lab/experiments/routing/three" data-route="three">Section three</a>
+      </nav>
+      <div id="route-status"></div>
+      <div id="route-content">Pick a section above.</div>
+    </div>
+    <details class="source">
+      <summary>View source (router)</summary>
+      <pre><code id="source-router"></code></pre>
+    </details>
+
+    <div class="demo-block">
+      <h2>Deep link test</h2>
+      <p class="hint">These are real links. GitHub Pages has no file at either address, so without the 404 fix each one would just hit GitHub's blank default 404. Open one in a new tab, or copy it into a fresh tab, to see the recovery happen for real — not simulated.</p>
+      <ul class="deep-links">
+        <li>
+          <a href="https://nlade-core.github.io/pages-lab/experiments/routing/two" target="_blank" rel="noopener">.../experiments/routing/two</a>
+          <span class="note">— a real section, should land correctly</span>
+        </li>
+        <li>
+          <a href="https://nlade-core.github.io/pages-lab/experiments/routing/nowhere" target="_blank" rel="noopener">.../experiments/routing/nowhere</a>
+          <span class="note">— not a real section, should show a friendly "not found" instead of GitHub's default</span>
+        </li>
+      </ul>
+    </div>
+    <details class="source">
+      <summary>View source (404.html redirect)</summary>
+      <pre><code id="source-404">fetching…</code></pre>
+    </details>
+
+    <div class="writeup">
+      <h2>Write-up</h2>
+      <p>The fix works, but it's not free: watch the address bar on a fresh deep-link load and you'll see it change twice — once as the browser lands on the 404 and gets bounced to the experiment's base URL, then again as the script restores the real intended path. That flicker is the honest cost of not having a real server. It also depends on JavaScript and sessionStorage being available; with JS disabled, a deep link just shows GitHub's default 404, full stop.</p>
+      <p>Status: done. Next: service-worker offline caching.</p>
+    </div>
+  </div>
+
+  <script>
+    var BASE = '/pages-lab/experiments/routing/';
+    var SECTIONS = {
+      one: 'Section one. Reached without a page reload if you clicked here, or recovered from a redirect if you loaded this URL fresh.',
+      two: 'Section two. Same deal — check the status line above for how this particular view was reached.',
+      three: 'Section three. The router doesn\'t care how it got the path, only what the path says right now.'
+    };
+
+    var howReached = 'loaded directly, no redirect needed';
+    var pending = sessionStorage.getItem('pages-lab-redirect');
+    if (pending) {
+      sessionStorage.removeItem('pages-lab-redirect');
+      history.replaceState(null, '', pending);
+      howReached = 'recovered from a fresh load via the 404 redirect trick';
+    }
+
+    function currentSlug() {
+      var path = location.pathname;
+      if (path.indexOf(BASE) !== 0) return '';
+      return path.slice(BASE.length).replace(/\/+$/, '');
+    }
+
+    function render(reachedNote) {
+      var slug = currentSlug();
+      var statusEl = document.getElementById('route-status');
+      var contentEl = document.getElementById('route-content');
+
+      document.querySelectorAll('nav.routes a').forEach(function (a) {
+        a.classList.toggle('current', a.dataset.route === slug);
+      });
+
+      if (!slug) {
+        statusEl.textContent = 'arrived via: ' + reachedNote;
+        contentEl.textContent = 'Pick a section above.';
+      } else if (SECTIONS[slug]) {
+        statusEl.textContent = 'arrived via: ' + reachedNote;
+        contentEl.textContent = SECTIONS[slug];
+      } else {
+        statusEl.textContent = 'arrived via: ' + reachedNote;
+        contentEl.innerHTML = '<span class="missing">No such section: "' + slug + '". This is the router\'s own not-found state, distinct from GitHub\'s.</span>';
+      }
+    }
+
+    document.querySelectorAll('nav.routes a').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        history.pushState(null, '', a.getAttribute('href'));
+        render('in-page click, no reload');
+      });
+    });
+
+    window.addEventListener('popstate', function () {
+      render('back/forward navigation');
+    });
+
+    render(howReached);
+
+    document.getElementById('source-router').textContent = document.currentScript.textContent;
+  </script>
+
+  <script>
+    fetch('../../404.html')
+      .then(function (r) { return r.text(); })
+      .then(function (text) {
+        document.getElementById('source-404').textContent = text;
+      })
+      .catch(function () {
+        document.getElementById('source-404').textContent =
+          'Could not fetch 404.html — this needs to run over http (Live Server), not opened directly as a file://.';
+      });
+  </script>
+</body>
+</html>
