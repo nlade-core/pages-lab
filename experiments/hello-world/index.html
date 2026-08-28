@@ -42,16 +42,6 @@
     max-width: 640px;
     margin: 0 auto;
   }
-  @media (min-width: 1000px) {
-    .layout {
-      max-width: 1040px;
-      display: grid;
-      grid-template-columns: 640px 1fr;
-      gap: 1.25rem 2.5rem;
-      align-items: start;
-    }
-    .header, .writeup { grid-column: 1 / -1; }
-  }
 
   a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
   a.back:hover { text-decoration: underline; }
@@ -87,7 +77,6 @@
     border-radius: 8px;
     padding: 0.75rem 1.25rem;
     margin-bottom: 1.25rem;
-    align-self: start;
   }
   details.source summary {
     cursor: pointer;
