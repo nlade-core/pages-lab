@@ -101,6 +101,19 @@
   .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
   .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
   .writeup p { margin-bottom: 0.75rem; }
+
+  details.lang-toggle { margin-bottom: 1.5rem; }
+  details.lang-toggle summary {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  details.lang-toggle summary:hover { color: var(--fg); }
+  details.lang-toggle p {
+    margin-top: 0.5rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
 </style>
 </head>
 <body>
@@ -108,7 +121,11 @@
     <div class="header">
       <a class="back" href="../../">← pages-lab</a>
       <h1>hello world</h1>
-      <p class="tagline">Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend? Each demo's own code sits next to it — click "View source" to compare.</p>
+      <p class="tagline">Just proving the basics work: buttons, a clock, drawing on the page — no server involved at all.</p>
+      <details class="lang-toggle">
+        <summary>Technical version</summary>
+        <p>Baseline check: does plain client-side JS/DOM/Canvas just work with zero backend? Each demo's own code sits next to it — click "View source" to compare.</p>
+      </details>
     </div>
 
     <div class="demo-block">
