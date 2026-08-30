@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>storage — pages-lab</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  img, picture, video, canvas, svg { display: block; max-width: 100%; }
+  input, button, textarea, select { font: inherit; }
+  p, h1, h2, h3 { overflow-wrap: break-word; }
+
+  :root {
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #555555;
+    --border: #dddddd;
+    --accent: #0a58ca;
+    --accent-fg: #ffffff;
+    --ok: #1a7f37;
+    --bad: #cf222e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9aa4af;
+      --border: #30363d;
+      --accent: #6ea8fe;
+      --accent-fg: #0d1117;
+      --ok: #3fb950;
+      --bad: #ff7b72;
+    }
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    padding: 3rem 1.5rem;
+  }
+
+  .layout { max-width: 640px; margin: 0 auto; }
+
+  a.back { color: var(--muted); font-size: 0.9rem; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+  h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
+  .tagline { color: var(--muted); margin-bottom: 1rem; }
+
+  details.lang-toggle { margin-bottom: 1.5rem; }
+  details.lang-toggle summary { cursor: pointer; font-size: 0.85rem; color: var(--muted); }
+  details.lang-toggle summary:hover { color: var(--fg); }
+  details.lang-toggle p { margin-top: 0.5rem; color: var(--muted); font-size: 0.95rem; }
+
+  .demo-block {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .demo-block h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+  .hint { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.95rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .status-row:last-of-type { border-bottom: none; }
+  .status-row .value { font-weight: 600; text-align: right; }
+
+  button {
+    background: var(--accent);
+    color: var(--accent-fg);
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  button:hover { opacity: 0.9; }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--border); }
+
+  .compare-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+  @media (min-width: 620px) { .compare-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  .compare-col { border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem; }
+  .compare-col h3 { font-size: 0.9rem; margin-bottom: 0.35rem; }
+  .compare-col .mech-note { color: var(--muted); font-size: 0.8rem; margin-bottom: 0.6rem; min-height: 2.4em; }
+  .compare-col input[type="text"] {
+    width: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.45rem 0.6rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  .compare-col button { width: 100%; margin-bottom: 0.5rem; }
+  .compare-col .result { font-size: 0.8rem; color: var(--muted); min-height: 1.2em; }
+  .compare-col .result.ok { color: var(--ok); }
+
+  .reload-row { display: flex; justify-content: center; margin: 1rem 0 0.25rem; }
+
+  .blob-preview { display: flex; align-items: center; gap: 1rem; margin-top: 0.75rem; }
+  .blob-preview canvas, .blob-preview img { border: 1px solid var(--border); border-radius: 6px; width: 90px; height: 90px; }
+  .blob-preview .placeholder {
+    width: 90px; height: 90px; border: 1px dashed var(--border); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.75rem; text-align: center;
+  }
+
+  details.source {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  details.source summary { cursor: pointer; font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+  details.source pre { margin-top: 1rem; overflow-x: auto; font-size: 0.85rem; max-height: 50vh; overflow-y: auto; }
+  details.source code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre; }
+
+  .writeup { color: var(--muted); font-size: 0.95rem; margin-top: 1.25rem; }
+  .writeup h2 { color: var(--fg); font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .writeup p { margin-bottom: 0.75rem; }
+
+  nav.pager {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  nav.pager a { color: var(--accent); text-decoration: none; }
+  nav.pager a:hover { text-decoration: underline; }
+  nav.pager .disabled { color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="layout">
+    <div class="header">
+      <a class="back" href="../">← pages-lab</a>
+      <h1>storage</h1>
+      <p class="tagline">If you type something into this page and reload it, does it remember? Depends entirely on where it was kept — an ordinary variable forgets, two browser storage mechanisms don't. Below: the same three-way test, live, plus your actual device's real storage quota rather than a number copied from documentation.</p>
+      <details class="lang-toggle">
+        <summary>Technical version</summary>
+        <p>Compares three places to hold a value: a plain JS variable (dies with the page, nothing to configure), <code>localStorage</code> (synchronous, string-only, a small per-origin cap), and <code>IndexedDB</code> (asynchronous, structured/binary-capable, quota tied to real device disk space rather than a fixed number). Also calls <code>navigator.storage.estimate()</code> for this origin's actual live usage/quota, and stores a real generated <code>Blob</code> in IndexedDB — something <code>localStorage</code> can't hold natively at all, only as bloated base64 text.</p>
+      </details>
+    </div>
+
+    <div class="demo-block">
+      <h2>Real quota, this device</h2>
+      <p class="hint">Live, not claimed — figures below come straight from this browser, on this device, right now. They will differ from any number quoted elsewhere, including anything said about this in conversation before building it.</p>
+      <div class="status-row"><span>Estimated quota (this origin)</span><span class="value" id="quota-value">checking…</span></div>
+      <div class="status-row"><span>Currently used (this origin)</span><span class="value" id="usage-value">checking…</span></div>
+      <button class="secondary" id="refresh-quota-btn">Refresh</button>
+    </div>
+
+    <div class="demo-block">
+      <h2>Three ways to remember a note</h2>
+      <p class="hint">Type something different in each box, click each box's own Save, then reload the whole page (button below, or your browser's own reload). Come back and look at this section again before reading anything else.</p>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <h3>None</h3>
+          <p class="mech-note">A plain JS variable. Nothing is ever written anywhere.</p>
+          <input type="text" id="none-input" autocomplete="off" placeholder="Type here…">
+          <button class="secondary" id="none-save-btn">"Save"</button>
+          <div class="result" id="none-result"></div>
+        </div>
+        <div class="compare-col">
+          <h3>localStorage</h3>
+          <p class="mech-note">Written to this origin's key-value store as plain text.</p>
+          <input type="text" id="ls-input" autocomplete="off" placeholder="Type here…">
+          <button id="ls-save-btn">Save</button>
+          <div class="result" id="ls-result"></div>
+        </div>
+        <div class="compare-col">
+          <h3>IndexedDB</h3>
+          <p class="mech-note">Written to a real (tiny) database, asynchronously.</p>
+          <input type="text" id="idb-input" autocomplete="off" placeholder="Type here…">
+          <button id="idb-save-btn">Save</button>
+          <div class="result" id="idb-result"></div>
+        </div>
+      </div>
+      <div class="reload-row">
+        <button class="secondary" id="reload-btn">Reload this page</button>
+      </div>
+    </div>
+    <details class="source">
+      <summary>View source (three-way note comparison)</summary>
+      <pre><code id="source-compare"></code></pre>
+    </details>
+
+    <div class="demo-block">
+      <h2>What IndexedDB can hold that localStorage can't</h2>
+      <p class="hint">localStorage is text-only — a real image would have to be crammed into text as base64 (about a third bigger, and awkward past a few KB). IndexedDB stores the actual binary <code>Blob</code> directly. Click below to generate a small tamper-proof timestamped swatch and save it for real; reload the page and it should still render below without regenerating.</p>
+      <button id="save-image-btn">Generate &amp; save an image to IndexedDB</button>
+      <div class="blob-preview">
+        <div class="placeholder" id="blob-placeholder">nothing saved yet</div>
+        <img id="blob-img" style="display:none;" alt="Saved swatch from IndexedDB">
+      </div>
+    </div>
+    <details class="source">
+      <summary>View source (image-as-Blob demo)</summary>
+      <pre><code id="source-blob"></code></pre>
+    </details>
+
+    <div class="writeup">
+      <h2>Write-up</h2>
+      <p>All three "remember a note" boxes look identical while you're typing — the difference only shows up on reload, which is exactly the point: storage choice is invisible until the moment you actually need it. The "None" box is guaranteed empty after a reload; <code>autocomplete="off"</code> plus an explicit clear on load rules out the browser's own form-restore quietly faking a save that never happened — a real, easy-to-miss false positive if left to a plain input's default behavior.</p>
+      <p><code>localStorage</code> reads back synchronously, instantly, no callback needed. <code>IndexedDB</code> is asynchronous even for a single tiny string — noticeably more code for the same job, which is the real cost of its extra capability, not the API being badly designed.</p>
+      <p>The quota box above is the honest version of a question that's easy to answer wrong from memory: the real number is whatever this specific browser, on this specific device, actually reports — not a fixed spec value. Expect it to look enormous (often a large fraction of free disk) rather than the ~5-10MB figure that's specifically a <code>localStorage</code>-only convention, not a platform-wide cap.</p>
+      <p>Neither mechanism survives everything. Clearing site data removes both. Safari in particular can evict a site's script-writable storage after about a week without a visit, as part of its anti-tracking behavior — worth knowing before treating either as permanent.</p>
+      <p>Status: done.</p>
+    </div>
+
+    <nav class="pager">
+      <a href="../06-repo-size/">← 06 repo size</a>
+      <span class="disabled">next: none — newest so far</span>
+    </nav>
+  </div>
+
+  <script>
+    const quotaEl = document.getElementById('quota-value');
+    const usageEl = document.getElementById('usage-value');
+
+    function formatBytes(bytes) {
+      if (bytes == null) return '—';
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let n = bytes, i = 0;
+      while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+      return n.toFixed(i === 0 ? 0 : 1) + ' ' + units[i];
+    }
+
+    async function refreshQuota() {
+      if (!(navigator.storage && navigator.storage.estimate)) {
+        quotaEl.textContent = 'not supported in this browser';
+        usageEl.textContent = 'not supported in this browser';
+        return;
+      }
+      try {
+        const { quota, usage } = await navigator.storage.estimate();
+        quotaEl.textContent = formatBytes(quota);
+        usageEl.textContent = formatBytes(usage);
+      } catch (e) {
+        quotaEl.textContent = 'error: ' + e.message;
+        usageEl.textContent = 'error: ' + e.message;
+      }
+    }
+    document.getElementById('refresh-quota-btn').addEventListener('click', refreshQuota);
+    refreshQuota();
+
+    document.getElementById('reload-btn').addEventListener('click', () => location.reload());
+  </script>
+
+  <script>
+    // --- "None" column: a plain variable, nothing ever persisted. ---
+    const noneInput = document.getElementById('none-input');
+    const noneResult = document.getElementById('none-result');
+    let noneValue = ''; // dies with the page -- this is the entire point of this column.
+    noneInput.value = ''; // explicit, so browser form-restore can't quietly fake a save.
+    document.getElementById('none-save-btn').addEventListener('click', () => {
+      noneValue = noneInput.value;
+      noneResult.textContent = '"Saved" to a JS variable -- reload and this box will be empty again.';
+      noneResult.className = 'result';
+    });
+
+    // --- localStorage column: synchronous, string-only. ---
+    const LS_KEY = 'pages-lab-07-storage-note';
+    const lsInput = document.getElementById('ls-input');
+    const lsResult = document.getElementById('ls-result');
+    document.getElementById('ls-save-btn').addEventListener('click', () => {
+      try {
+        localStorage.setItem(LS_KEY, lsInput.value);
+        lsResult.textContent = 'Saved. Reload -- it should still be here.';
+        lsResult.className = 'result ok';
+      } catch (e) {
+        lsResult.textContent = 'Failed: ' + e.message;
+        lsResult.className = 'result';
+      }
+    });
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved != null) {
+        lsInput.value = saved;
+        lsResult.textContent = 'Restored from localStorage on load.';
+        lsResult.className = 'result ok';
+      }
+    } catch (e) {
+      lsResult.textContent = 'localStorage unavailable: ' + e.message;
+    }
+
+    // --- IndexedDB column: asynchronous, a real (tiny) database. ---
+    // A minimal promise wrapper around IndexedDB's callback-style API -- there's
+    // no shortcut for this part, which is itself the real cost of IndexedDB's
+    // extra capability over localStorage's synchronous simplicity.
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('pages-lab-07-storage-demo', 1);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains('kv')) db.createObjectStore('kv');
+          if (!db.objectStoreNames.contains('files')) db.createObjectStore('files');
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+    function idbGet(store, key) {
+      return openDB().then((db) => new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readonly');
+        const req = tx.objectStore(store).get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      }));
+    }
+    function idbSet(store, key, value) {
+      return openDB().then((db) => new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readwrite');
+        tx.objectStore(store).put(value, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      }));
+    }
+
+    const IDB_KEY = 'note';
+    const idbInput = document.getElementById('idb-input');
+    const idbResult = document.getElementById('idb-result');
+    document.getElementById('idb-save-btn').addEventListener('click', async () => {
+      try {
+        await idbSet('kv', IDB_KEY, idbInput.value);
+        idbResult.textContent = 'Saved. Reload -- it should still be here.';
+        idbResult.className = 'result ok';
+      } catch (e) {
+        idbResult.textContent = 'Failed: ' + e.message;
+        idbResult.className = 'result';
+      }
+    });
+    (async () => {
+      try {
+        const saved = await idbGet('kv', IDB_KEY);
+        if (saved != null) {
+          idbInput.value = saved;
+          idbResult.textContent = 'Restored from IndexedDB on load.';
+          idbResult.className = 'result ok';
+        }
+      } catch (e) {
+        idbResult.textContent = 'IndexedDB unavailable: ' + e.message;
+      }
+    })();
+
+    document.getElementById('source-compare').textContent = document.currentScript.textContent;
+  </script>
+
+  <script>
+    // --- Real Blob storage: something localStorage cannot hold natively. ---
+    const IMG_KEY = 'swatch';
+    const blobImg = document.getElementById('blob-img');
+    const blobPlaceholder = document.getElementById('blob-placeholder');
+
+    function showBlob(blob) {
+      blobImg.src = URL.createObjectURL(blob);
+      blobImg.style.display = 'block';
+      blobPlaceholder.style.display = 'none';
+    }
+
+    document.getElementById('save-image-btn').addEventListener('click', async () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 90;
+      canvas.height = 90;
+      const ctx = canvas.getContext('2d');
+      const hue = Math.floor(Math.random() * 360);
+      ctx.fillStyle = 'hsl(' + hue + ', 70%, 55%)';
+      ctx.fillRect(0, 0, 90, 90);
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.font = '10px monospace';
+      ctx.fillText(new Date().toLocaleTimeString(), 4, 84);
+
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      await idbSet('files', IMG_KEY, blob);
+      showBlob(blob);
+    });
+
+    (async () => {
+      try {
+        const blob = await idbGet('files', IMG_KEY);
+        if (blob) showBlob(blob);
+      } catch (e) {
+        blobPlaceholder.textContent = 'IndexedDB unavailable';
+      }
+    })();
+
+    document.getElementById('source-blob').textContent = document.currentScript.textContent;
+  </script>
+</body>
+</html>

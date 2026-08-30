@@ -68,6 +68,7 @@
       <tr><td><a href="04-pyodide/">Pyodide numeric ceiling</a></td><td class="status-done">done</td></tr>
       <tr><td><a href="05-actions-latency/">Actions-triggered update latency</a></td><td class="status-done">done</td></tr>
       <tr><td><a href="06-repo-size/">Max practical repo/site size</a></td><td class="status-done">done</td></tr>
+      <tr><td><a href="07-storage-limits/">localStorage vs. IndexedDB, real quota</a></td><td class="status-done">done</td></tr>
     </tbody>
   </table>
 
@@ -78,6 +79,7 @@
     <li><strong>Pyodide:</strong> real ~14.5MB upfront cost, genuinely works after that — the ceiling is measured live, not asserted.</li>
     <li><strong>Scheduled updates:</strong> take real minutes, not seconds — schedule slip plus deploy time, both measured directly.</li>
     <li><strong>Size limits:</strong> irrelevant in practice for a project this size — a small fraction of a percent of any real ceiling.</li>
+    <li><strong>Storage:</strong> localStorage is synchronous and text-only with a small (~5-10MB) cap; IndexedDB is asynchronous, holds real binary Blobs, and its quota tracks actual free disk space, not a fixed number — measured live via <code>navigator.storage.estimate()</code>, not quoted from docs.</li>
   </ul>
 
   <footer>

@@ -218,12 +218,12 @@
       <p>GitHub's own docs (cited, not paraphrased from memory): individual files get a warning past 50 MiB and are hard-blocked past 100 MiB — confirmed directly above, exact numbers match. Beyond single files: repos are recommended to stay under 1GB (under 5GB "strongly recommended" as a hard outer bound), a GitHub Pages source repo has the same 1GB recommended limit, and a published Pages site itself is capped at 1GB. None of that is enforced by testing here — actually reproducing a 1GB+ repo just to watch it get flagged isn't a reasonable thing to do to GitHub's infrastructure for a demo.</p>
       <p>Two more documented limits that aren't practically testable at all without real cost: bandwidth is soft-capped at 100GB/month, and Pages builds are soft-limited to 10/hour (though that specific cap doesn't apply to a site built via a custom Actions workflow, which is worth knowing if you ever lean on that harder than this project has).</p>
       <p>Where this project actually sits: check the number above. Six experiments, plain HTML/CSS/JS, no images or binaries — nowhere close to any of these ceilings, and that's itself the honest finding: for a project shaped like this one, the limits are effectively irrelevant. They start to matter the moment binary assets, datasets, or build artifacts enter the picture, none of which pages-lab ever needed.</p>
-      <p>Status: done. This is the last one — pages-lab's six-part progression ends here.</p>
+      <p>Status: done. This was meant to be the last of an original six-part progression — a seventh, <a href="../07-storage-limits/">storage</a>, followed later.</p>
     </div>
 
     <nav class="pager">
       <a href="../05-actions-latency/">← 05 actions latency</a>
-      <span class="disabled">next: none — that's all six</span>
+      <a href="../07-storage-limits/">07 storage →</a>
     </nav>
   </div>
 

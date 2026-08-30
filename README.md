@@ -14,6 +14,7 @@ Root page is an index of experiments. Each one lives at `NN-name/` — numbered 
 | [Pyodide numeric ceiling](04-pyodide/) | done |
 | [Actions-triggered content update latency](05-actions-latency/) | done |
 | [Max practical repo/site size](06-repo-size/) | done |
+| [localStorage vs. IndexedDB, real device quota](07-storage-limits/) | done |
 
 ## What this found
 
@@ -22,9 +23,10 @@ Root page is an index of experiments. Each one lives at `NN-name/` — numbered 
 - **Pyodide**: real ~14.5MB upfront cost, genuinely works after that — the actual numeric ceiling is measured live on the page, not asserted.
 - **Scheduled updates**: take real minutes, not seconds — schedule slip plus deploy time both measured directly against GitHub's own API.
 - **Size limits**: individual files hard-block at 100MB, repos/sites are soft-capped around 1GB — irrelevant in practice for a project this size (a small fraction of a percent of the ceiling).
+- **Storage**: `localStorage` is synchronous, text-only, small (~5-10MB, convention not spec); `IndexedDB` is asynchronous, holds real binary `Blob`s, and its quota tracks actual free device disk space rather than a fixed number — measured live via `navigator.storage.estimate()` on the page itself, not quoted from docs.
 
 ## What's next
 
-Same six tests, re-run against another static host (Cloudflare Pages) for a real side-by-side comparison, rather than an isolated GitHub Pages study.
+Original six tests, re-run against another static host (Cloudflare Pages) for a real side-by-side comparison, rather than an isolated GitHub Pages study. Storage was added as a seventh, separate from that plan.
 
 Site: https://nlade-core.github.io/pages-lab/
